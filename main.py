@@ -1,10 +1,10 @@
 from core import Viewer, Shader
-from terrain import Terrain
+from terrain.terrain import Terrain
 
 def main():
     viewer = Viewer()
-    shader = Shader("color.vert", "color.frag")
-    viewer.add(Terrain(1, shader))
+    terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
+    viewer.add(Terrain(1, terrainShader))
     viewer.run()
 
 if __name__ == "__main__":

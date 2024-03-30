@@ -1,7 +1,9 @@
 from core import Mesh
-from random import randint
 import numpy as np
+import OpenGL.GL as GL
+from random import randint
 from time import time
+
 
 class Terrain(Mesh):
     def __init__(self, position, shader):
@@ -79,3 +81,6 @@ class Terrain(Mesh):
         interpolation = np.array([1, x, x ** 2, x ** 3]) @ self.matL @ matF @ self.matR @ np.array([[1], [y], [y ** 2], [y ** 3]])
 
         return interpolation.item()
+
+    def draw(self, primitives=GL.GL_TRIANGLES, attributes=None, **uniforms):
+        super().draw(primitives, attributes = attributes, **uniforms)
