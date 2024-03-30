@@ -7,8 +7,11 @@ class Terrain(Mesh):
     def __init__(self, position, shader):
         self.__init_perlin_noise(int(time()))
 
+        self.matL = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [-3, 3, -2, -1], [2, -2, 1, 1]])
+        self.matR = np.array([[1, 0, -3, 2], [0, 0, 3, -2], [0, 1, -2, 1], [0, 0, -1, 1]])
+
         index = list()
-        pos = np.array([np.array((i, j, self.__get_noise(i, j, 30, 1/10))) for i in range(100) for j in range(100)])
+        pos = np.array([np.array((i, j, self.__get_noise(i, j, 70, 1/n20))) for i in range(100) for j in range(100)])
         norm = np.zeros(shape = (10000, 3))
 
         for i in range(99):
@@ -47,18 +50,32 @@ class Terrain(Mesh):
 
     def __get_noise(self, x, y, amplitude, freq):
         x *= freq
-        coord_x = int(x) % 200
-        if (coord_x >= 100):
-            coord_x = 199 - coord_x
+        x_coords = [(int(x) + i) % 200 for i in range(-2,4)]
+        for i in range(6):
+            if x_coords[i] > 100:
+                x_coords[i] = 199 - x_coords[i]
 
         y *= freq
-        coord_y = int(y) % 200
-        if (coord_y > 100):
-            coord_y = 199 - coord_y
+        y_coords = [(int(y) + i) % 200 for i in range(-2,4)]
+        for i in range(6):
+            if y_coords[i] > 100:
+                y_coords[i] = 199 - y_coords[i]
 
-        return amplitude * self.__interpolation(x - int(x), y - int(y), self.perlin[coord_x][coord_y], self.perlin[coord_x][coord_y + 1], self.perlin[coord_x + 1][coord_y], self.perlin[coord_x + 1][coord_y + 1])
+        return amplitude * self.__bicubic_interpolation(x - int(x), y - int(y), x_coords, y_coords)
 
 
-    def __interpolation(self, x, y, t, u, v, w):
-        return (w + t - u - v) * x * y + (v - t) * x + (u - t) * y + t
+    def __bicubic_interpolation(self, x, y, x_coords, y_coords):
+        f = [[self.perlin[x_coords[i]][y_coords[j]] for j in range(6)] for i in range(6)]
 
+        fx = [[(f[i + 1][j] - f[i - 1][j]) / 2 for j in range (1, 5)] for i in range(1, 5)]
+
+        fy = [[(f[i][j + 1] - f[i][j - 1]) / 2 for j in range (1, 5)] for i in range(1, 5)]
+
+        fxy = [[(fy[i + 1][j] - fy[i - 1][j] + fx[i][j + 1] - fx[i][j - 1]) / 4 for j in range(1, 3)] for i in range(1, 3)]
+        # See https://en.wikipedia.org/wiki/Bicubic_interpolation
+
+        matF = np.array([[f[2][2], f[2][3], fy[1][1], fy[1][2]], [f[3][2], f[3][3], fy[2][1], fy[2][2]], [fx[1][1], fx[1][2], fxy[0][0], fx[0][1]], [fx[2][1], fx[2][2], fxy[1][0], fxy[1][1]]])
+
+        interpolation = np.array([1, x, x ** 2, x ** 3]) @ self.matL @ matF @ self.matR @ np.array([[1], [y], [y ** 2], [y ** 3]])
+
+        return interpolation.item()
