@@ -11,7 +11,7 @@ class Terrain(Mesh):
         self.matR = np.array([[1, 0, -3, 2], [0, 0, 3, -2], [0, 1, -2, 1], [0, 0, -1, 1]])
 
         index = list()
-        pos = np.array([np.array((i, j, self.__get_noise(i, j, 70, 1/n20))) for i in range(100) for j in range(100)])
+        pos = np.array([np.array((i, j, self.__get_noise(i, j, 70, 1/20))) for i in range(100) for j in range(100)])
         norm = np.zeros(shape = (10000, 3))
 
         for i in range(99):
