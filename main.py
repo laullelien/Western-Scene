@@ -4,7 +4,7 @@ from terrain.terrain import Terrain
 def main():
     viewer = Viewer()
     terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
-    viewer.add(Terrain(1, terrainShader))
+    viewer.add(Terrain(terrainShader))
     viewer.run()
 
 if __name__ == "__main__":
