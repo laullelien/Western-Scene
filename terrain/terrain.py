@@ -3,32 +3,20 @@ import numpy as np
 import OpenGL.GL as GL
 from random import randint
 from time import time
-
+from terrain.mountain import Mountain
 
 class Terrain(Mesh):
     def __init__(self, shader):
         self.size = 100
-        self.mountain_number = 4
-        self.mountain_radius = 6
-        # TODO make sure mountains do not intersect
-        self.mountain_points = [np.array([randint(0, self.size - 1), randint(0, self.size - 1)])]
-        while len(self.mountain_points) != self.mountain_number:
-            peek = True
-            new_point = np.array([randint(0, self.size - 1), randint(0, self.size - 1)])
-            for point in self.mountain_points:
-                if np.linalg.norm(new_point - point) < 4 * self.mountain_radius:
-                    peek = False
-                    break
-            if peek:
-                self.mountain_points.append(new_point)
 
+        self.__init_mountains(4)
         self.__init_perlin_noise(int(time()))
 
         self.matL = np.array([[1, 0, 0, 0], [0, 0, 1, 0], [-3, 3, -2, -1], [2, -2, 1, 1]])
         self.matR = np.array([[1, 0, -3, 2], [0, 0, 3, -2], [0, 1, -2, 1], [0, 0, -1, 1]])
 
         index = list()
-        pos = np.array([np.array((i, j, self.__get_height(i, j, 2, 1 / 10))) for i in range(self.size) for j in range(self.size)])
+        pos = np.array([np.array((i, j, self.__get_height(i, j, 1, .3))) for i in range(self.size) for j in range(self.size)])
         norm = np.zeros(shape = (self.size * self.size, 3))
 
         for i in range(self.size - 1):
@@ -60,6 +48,21 @@ class Terrain(Mesh):
         
         super().__init__(shader, attributes = dict(normal = norm,position = pos), index = index)
     
+    def __init_mountains(self, mountain_number):
+        self.mountains = list()
+        max_mountain_radius = 10
+        max_mountain_height = 10
+        while len(self.mountains) != mountain_number:
+            peek = True
+            new_point = np.array([randint(0, self.size - 1), randint(0, self.size - 1)])
+            for mnt in self.mountains:
+                if np.linalg.norm(new_point - mnt.center) < 4 * max_mountain_radius:
+                    peek = False
+                    break
+            if peek:
+                rand = np.random.rand()
+                self.mountains.append(Mountain(max_mountain_height * (0.9 + rand), max_mountain_radius * (0.5 * rand + 0.5), new_point))
+    
     def __init_perlin_noise(self, seed):
         np.random.seed(seed)
 
@@ -78,10 +81,12 @@ class Terrain(Mesh):
             if y_coords[i] >= self.size:
                 y_coords[i] = (2 * self.size - 1) - y_coords[i]
 
-        f = [[amplitude * self.perlin[x_coords[i]][y_coords[j]]  for j in range(6)] for i in range(6)]
+        #f = [[amplitude * self.perlin[x_coords[i]][y_coords[j]]  for j in range(6)] for i in range(6)]
+        mountain_height = self.__mountain_map(x / freq, y / freq)
+        f = [[amplitude * self.perlin[x_coords[i]][y_coords[j]] + mountain_height for j in range(6)] for i in range(6)]
 
-        return self.__bicubic_interpolation(x - int(x), y - int(y), f) + self.__mountain_map(x / freq, y / freq, 15)
-
+        #return self.__bicubic_interpolation(x - int(x), y - int(y), f) + self.__mountain_map(x / freq, y / freq)
+        return self.__bicubic_interpolation(x - int(x), y - int(y), f)
 
     # f is a 6x6 array containing images of f
     def __bicubic_interpolation(self, x, y, f):
@@ -98,14 +103,12 @@ class Terrain(Mesh):
 
         return interpolation.item()
 
-    def __mountain_map(self, x, y, height):
-        for mountain_top in self.mountain_points:
-            dist = np.sqrt((x - mountain_top[0]) ** 2 + (y - mountain_top[1]) ** 2)
-            if (dist <= self.mountain_radius):
-                return height + 1 * np.random.rand()
-            elif dist <= 2 * self.mountain_radius:
-                return 1 * (height + np.random.rand()) / 2 * (2 * self.mountain_radius - dist) / (self.mountain_radius)
+    def __mountain_map(self, x, y):
+        for mountain in self.mountains:
+            dist = np.sqrt((x - mountain.getX()) ** 2 + (y - mountain.getY()) ** 2)
+            dist *= (np.random.rand()) / 4 + .9
+            if (dist <= mountain.radius):
+                return mountain.height + np.random.rand()
+            elif dist <= 2 * mountain.radius:
+                return 2 * (mountain.height + .5 * np.random.rand()) / 5 * (2 * mountain.radius - dist) / (mountain.radius)
         return 0
-
-    def draw(self, primitives=GL.GL_TRIANGLES, attributes=None, **uniforms):
-        super().draw(primitives, attributes = attributes, **uniforms)
