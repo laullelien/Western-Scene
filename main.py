@@ -1,6 +1,6 @@
 from core import Viewer, Shader
 from terrain.terrain import Terrain
-from plant.plant import Tree
+from plant.plant import Cactus
 
 def main():
     viewer = Viewer()
@@ -13,7 +13,7 @@ def main():
 
     #load plants
     treeShader = Shader("plant/plant.vert", "plant/plant.frag")
-    viewer.add(Tree(terrainShader))
+    viewer.add(Cactus(terrainShader))
     viewer.run()
 
 if __name__ == "__main__":
