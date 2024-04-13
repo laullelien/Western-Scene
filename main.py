@@ -13,7 +13,7 @@ def main():
 
     #load plants
     treeShader = Shader("plant/plant.vert", "plant/plant.frag")
-    viewer.add(Cactus(terrainShader))
+    viewer.add(Cactus(treeShader))
     viewer.run()
 
 if __name__ == "__main__":
