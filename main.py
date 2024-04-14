@@ -9,7 +9,7 @@ def main():
 
     #load files necessary for terrain generation
     terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
-    #viewer.add(Terrain(terrainShader))
+    viewer.add(Terrain(terrainShader))
 
     #load plants
     treeShader = Shader("plant/plant.vert", "plant/plant.frag")
