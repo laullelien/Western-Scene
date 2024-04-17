@@ -13,7 +13,7 @@ class Cube(Node):
     """ Very simple cube based on provided load function """
     def __init__(self, shader):
         super().__init__()
-        self.add(*load('plant/cube.obj', shader))  # just load cube from file
+        self.add(*load(file='plant/cube.obj', tex_file='plant/cube.png', shader=shader))  # just load cube from file
 
 class Cactus(Node):
     def __init__(self, shader):

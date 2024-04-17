@@ -1,7 +1,7 @@
 from core import Viewer, Shader
 from terrain.terrain import Terrain
-from river.river import River
 from plant.plant import Cactus
+from scene.camp import Camp
 
 def main():
     viewer = Viewer()
@@ -14,12 +14,17 @@ def main():
     terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
     #viewer.add(Terrain(terrainShader, world_size))
 
-    riverShader = Shader("river/river.vert", "river/river.frag")
-    viewer.add(River(riverShader, world_size))
+    #riverShader = Shader("river/river.vert", "river/river.frag")
+    #viewer.add(River(riverShader, world_size))
 
     #load plants
-    treeShader = Shader("plant/plant.vert", "plant/plant.frag")
-    viewer.add(Cactus(treeShader))
+    textureShader = Shader("scene/texture.vert", "scene/texture.frag")
+    #viewer.add(Cactus(textureShader))
+
+    colorShader = Shader("plant/color.vert", "plant/color.frag")
+
+    viewer.add(Camp(textureShader))
+
     viewer.run()
 
 if __name__ == "__main__":
