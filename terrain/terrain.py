@@ -7,8 +7,8 @@ from time import time
 from terrain.mountain import Mountain
 
 class Terrain(Mesh):
-    def __init__(self, shader):
-        self.size = 200
+    def __init__(self, shader, size):
+        self.size = size
 
         self.__init_mountains(6)
         self.__init_river()
