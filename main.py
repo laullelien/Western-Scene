@@ -12,7 +12,7 @@ def main():
 
     #load files necessary for terrain generation
     terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
-    #viewer.add(Terrain(terrainShader, world_size))
+    viewer.add(Terrain(terrainShader, world_size))
 
     riverShader = Shader("river/river.vert", "river/river.frag")
     viewer.add(River(riverShader, world_size))
