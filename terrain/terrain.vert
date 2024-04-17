@@ -10,9 +10,11 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-out vec4 color;
+out vec3 w_normal;
+out vec3 w_position;
 
 void main() {
     gl_Position = projection * view * model * vec4(position, 1);
-    color = vec4(normal, 0);
+    w_position = position;
+    w_normal = normal;
 }
