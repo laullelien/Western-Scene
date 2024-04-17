@@ -15,28 +15,30 @@ class Cube(Node):
         super().__init__()
         self.add(*load('plant/cube.obj', shader))  # just load cube from file
 
-class Tree(Node):
+class Cactus(Node):
     def __init__(self, shader):
         super().__init__()
 
         cube = Cube(shader)
 
-        trunk = Node(transform=scale(x=1,y=5,z=1))
+        trunk = Node(transform=translate(z=-10) @ scale(x=1,y=5,z=1) @ rotate(axis=(0,1,0), angle=-45))
         trunk.add(cube)
 
-        branch1 = Node(transform=translate(z=1.5, y=0.45) @ scale(x=0.5,y=0.1,z=2) @ rotate(angle=90))
+        branch1 = Node(transform=translate(z=1.5, y=0.15) @ scale(x=0.7,y=0.15,z=2) @ rotate(angle=90))
         branch1.add(cube)
 
-        branch1 = Node(transform=translate(z=1.5, y=0.45) @ scale(x=0.5,y=0.1,z=2) @ rotate(angle=90))
-        branch1.add(cube)
-
-        branch11 = Node(transform=translate(z=-1.5, y=0.45) @ scale(x=0.5,y=0.1,z=2) @ rotate(angle=-90))
+        branch11 = Node(transform=translate(z=-1.5, y=0.35) @ rotate(angle=-90) @ scale(x=1,y=2,z=0.3))
         branch11.add(cube)
 
         branch1.add(branch11)
 
-        branch2 = Node(transform=translate(z=-1.3, y=0.35) @ scale(x=0.5,y=0.1,z=1.8) @ rotate(angle=-90))
+        branch2 = Node(transform=translate(z=-1.3, y=-0.10) @ scale(x=0.5,y=0.1,z=1.8) @ rotate(angle=-90))
         branch2.add(cube)
+
+        branch21 = Node(transform=translate(z=1.5, y=0.35) @ rotate(angle=90) @ scale(x=1,y=2,z=0.3))
+        branch21.add(cube)
+
+        branch2.add(branch21)
 
         trunk.add(branch1)
         trunk.add(branch2)
