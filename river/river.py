@@ -41,11 +41,11 @@ class River(Mesh):
             attributes=dict(position=self.pos),
             index=index,
             time=self.time,
-            k_d=(0, 1, 0),
+            k_d=(.8, 0.8, 0.8),
             k_a=(.3, .75, 0.89, 1),
-            light_dir=(1, 0, 0),
-            k_s=(0, 0, 1),
-            s=2,
+            light_dir=(.5, .5, 0),
+            k_s=(.6, 0.6, 0.6),
+            s=5,
         )
 
     def draw(self, primitives=GL.GL_TRIANGLES, attributes=None, **uniforms):

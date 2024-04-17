@@ -9,6 +9,7 @@ uniform mat4 projection;
 uniform float time;
 
 out vec3 w_normal;
+out vec3 w_position;
 
 void main() {
     vec4 a = vec4(1., .5, .25, .125);
@@ -19,6 +20,7 @@ void main() {
     float height = .0;
     float dx = .0;
     float dy = .0;
+
     for(int i = 0; i < 4; ++i) {
         height += a[i] * sin(kx[i] * position.x + ky[i] * position.y + w[i] * time + deph[i]);
         dx += a[i] * kx[i] * cos(kx[i] * position.x + ky[i] * position.y + w[i] * time + deph[i]);
@@ -26,6 +28,9 @@ void main() {
     }
 
     gl_Position = projection * view * model * vec4(position, height - 2, 1);
+
     w_normal = cross(vec3(1, 0, dx), vec3(0, 1, dy));
     w_normal = normalize(w_normal);
+
+    w_position = vec3(position, height - 2);
 }
