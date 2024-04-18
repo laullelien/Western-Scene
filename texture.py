@@ -29,7 +29,7 @@ class Texture:
             print("ERROR: unable to load texture file %s" % tex_file)
 
     def __del__(self):  # delete GL texture from GPU when object dies
-        GL.glDeleteTextures(self.glid)
+        GL.glDeleteTextures(1, [self.glid])
 
 
 # -------------- Textured mesh decorator --------------------------------------

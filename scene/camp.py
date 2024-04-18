@@ -7,7 +7,6 @@ import OpenGL.GL as GL              # standard Python OpenGL wrapper
 import numpy as np                  # all matrix manipulations & OpenGL args
 from itertools import cycle
 import glfw                         # lean window system wrapper for OpenGL
-import noise
 
 from core import Node, load, Mesh, Shader, Texture
 from transform import translate, identity, rotate, scale
@@ -18,29 +17,32 @@ class Camp(Node):
 	def __init__(self, shader):
 		super().__init__()
 
-		self.emmiter = ParticleSystem()
-		self.emmiter.addParticle()
-
-		mesh = Quad(shader)
-		#self.add(mesh)
+		centerX = 0
+		centerY = 0
+		centerZ = 0
+		
+		self.transform = translate(centerX, centerY, centerZ)
 
 		firepit = Node(transform=scale(1.2))
 		firepit.add(*load(file='scene/firepit.obj', tex_file='scene/firepit.png', shader=shader))
+
+		self.emmiter = ParticleSystem(centerX, centerY, centerZ)
 
 		tent = Node(transform=translate(z=11) @ scale(0.5) @ rotate(axis=(0,1,0), angle=-23))
 		tent.add(*load(file='scene/tent.obj', tex_file='scene/tent.png', shader=shader))
 
 		self.add(firepit)
-		#self.add(tent)
+		self.add(tent)
 
 	def draw(self, model=identity(), **other_uniforms):
 		self.emmiter.draw(**other_uniforms)
 		super().draw(model, **other_uniforms)
 
 class ParticleSystem():
-	def __init__(self):		
-		self.x = 0
-		self.y = 0
+	def __init__(self, x, y, z):		
+		self.x = x
+		self.y = y
+		self.z = z
 
 		self.t0 = time()
 		self.time = 0.0
@@ -49,17 +51,17 @@ class ParticleSystem():
 		self.particleList = []
 
 	def addParticle(self):
-		vx = 0.05
-		vy = 0.05
-		vz = 0.05
+		vx = 0.8
+		vy = 0.5
+		vz = 0.8
 		
-		f = Particle(0,0,0, vx,vy,vz, [0.8,0.8,0.8,1], 0.5)			
+		f = Particle(self.x,self.y + 0.5,self.z, vx,vy,vz, [0.8,0.8,0.8,1], 0.5)			
 		self.particleList.append(f)
 
 	def draw(self, **other_uniforms):		
-		if(self.interval > 10):
+		if(self.interval > 0.5):
 			self.interval = 0
-			if(random.random() < 0.60):
+			if(random.random() < 0.6):
 				self.addParticle()
 
 		for i in range(len(self.particleList) - 1,0, -1):
@@ -71,11 +73,13 @@ class ParticleSystem():
 			else:
 				p.draw(**other_uniforms)
 
-		self.interval += glfw.get_time() - self.time
-		self.time = time() - self.t0
+		currTime = glfw.get_time()
+
+		self.interval += currTime - self.time
+		self.time = currTime
 
 class Particle():
-	def __init__(self, x, y, z, vx, vy, vz, color, size, maxAge = 500):	
+	def __init__(self, x, y, z, vx, vy, vz, color, size, maxAge = 60):	
 		#Position
 		self.x = x		
 		self.y = y		
@@ -102,31 +106,31 @@ class Particle():
 		self.color = color
 		self.is_dead = False
 
-		self.texture = Texture("scene/smoke.png")
 		self.quad = Quad(Shader("scene/particle.vert", "scene/particle.frag"))
 
 	def update(self, t):
 		currTime = glfw.get_time()
 		deltaTime = currTime - t
 
+		#print(f"Current time: {currTime} Delta time: {deltaTime} Age: {self.age}")
+
 		noise_x = self.amplitudeX * math.sin(self.freqX * currTime + self.phaseX) * math.sqrt(currTime/10)
 		noise_z = self.amplitudeZ * math.sin(self.freqZ * currTime + self.phaseZ) * math.sqrt(currTime/10)
-
 
 		self.x += self.vx * noise_x * deltaTime
 		self.y += self.vy * deltaTime
 		self.z += self.vz * noise_z * deltaTime
+
 		self.check_particle_age(deltaTime)
 
 	def draw(self, **other_uniforms):
 		other_uniforms["center"] = np.array([self.x, self.y, self.z], dtype=np.float32)
 		other_uniforms["size"] = np.array([self.size, self.size], dtype=np.float32)
 		other_uniforms["alpha"] = 1 - (self.age / self.max_age)
-		#other_uniforms["texture_map"] = self.texture
 
 		self.quad.draw(**other_uniforms)
 
-	def check_particle_age(self, deltaTime):		
+	def check_particle_age(self, deltaTime):	
 		self.age += deltaTime
 		self.is_dead = self.age >= self.max_age	
 

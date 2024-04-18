@@ -2,6 +2,7 @@ from core import Viewer, Shader
 from terrain.terrain import Terrain
 from plant.plant import Cactus
 from scene.camp import Camp
+import OpenGL.GL as GL
 
 def main():
     viewer = Viewer()
@@ -25,6 +26,9 @@ def main():
 
     viewer.add(Camp(textureShader))
 
+    GL.glEnable(GL.GL_BLEND)
+    GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
+    
     viewer.run()
 
 if __name__ == "__main__":

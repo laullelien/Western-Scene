@@ -10,7 +10,14 @@ in vec2 frag_tex_coords;
 out vec4 out_color;
 
 void main() {
-    //out_color = texture(texture_map, frag_tex_coords);
-    //out_color = vec4(out_color.r, out_color.g, out_color.b, alpha);
-    out_color = vec4(frag_tex_coords, 1, alpha);
+    float x = frag_tex_coords.x - 0.5;
+    float y = frag_tex_coords.y - 0.5;
+    float dist = sqrt((x * x) + (y * y));
+    
+    if(dist <= 0.3)
+        out_color = vec4(0.5, 0.5, 0.5, alpha);
+    else
+        discard;
+
+    //out_color = vec4(frag_tex_coords, 1, alpha);
 }
