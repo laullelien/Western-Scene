@@ -7,120 +7,139 @@ import OpenGL.GL as GL              # standard Python OpenGL wrapper
 import numpy as np                  # all matrix manipulations & OpenGL args
 from itertools import cycle
 import glfw                         # lean window system wrapper for OpenGL
+import noise
 
-from core import Node, load, Mesh
+from core import Node, load, Mesh, Shader, Texture
 from transform import translate, identity, rotate, scale
+from time import time
 
 class Camp(Node):
-    """ Very simple cube based on provided load function """
-    def __init__(self, shader):
-        super().__init__()
-        particle = SmokeParticle(shader=shader)
-        #self.add(particle)
+	""" Very simple cube based on provided load function """
+	def __init__(self, shader):
+		super().__init__()
 
-        firepit = Node(transform=scale(1.2))
-        firepit.add(*load(file='scene/firepit.obj', tex_file='scene/firepit.png', shader=shader))
+		self.emmiter = ParticleSystem()
+		self.emmiter.addParticle()
 
-        tent = Node(transform=translate(z=11) @ scale(0.5) @ rotate(axis=(0,1,0), angle=-23))
-        tent.add(*load(file='scene/tent.obj', tex_file='scene/tent.png', shader=shader))
+		mesh = Quad(shader)
+		#self.add(mesh)
 
-        self.add(firepit)
-        self.add(tent)
+		firepit = Node(transform=scale(1.2))
+		firepit.add(*load(file='scene/firepit.obj', tex_file='scene/firepit.png', shader=shader))
 
+		tent = Node(transform=translate(z=11) @ scale(0.5) @ rotate(axis=(0,1,0), angle=-23))
+		tent.add(*load(file='scene/tent.obj', tex_file='scene/tent.png', shader=shader))
 
-class ParticleEmmiter:
-    def __init__(self):
-        pass
+		self.add(firepit)
+		#self.add(tent)
 
-class Quad(Mesh):
-    def __init__(self, shader):
-        position = np.array(((-0.5, -0.5, 0.0), (0.5, -0.5, 0.0), (0.5,  0.5, 0.0), (-0.5,  0.5, 0.0)), 'f')
-        tex_coord = np.array(((0,0), (1,0), (1,1), (0,1)), 'f')
-        #color = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 1)), 'f')
-        index = np.array((0, 1, 3, 3, 1, 2), np.uint32)
-        self.color = (1, 1, 1)
-        attributes = dict(position=position, tex_coord=tex_coord)
-        super().__init__(shader, index=index, attributes=attributes)
+	def draw(self, model=identity(), **other_uniforms):
+		self.emmiter.draw(**other_uniforms)
+		super().draw(model, **other_uniforms)
 
-    def draw(self, primitives=GL.GL_TRIANGLES, **uniforms):
-        super().draw(primitives=primitives, global_color=self.color, **uniforms)
-
-class Particle(object):
-	def __init__(self,x,y,vx,vy,color,size,maxAge = 10):	
-		self.x = x		#Position
-		self.y = y		
-		self.vx =vx		#velocity components
-		self.vy = vy
-
-		self.age= 0		
-		self.max_age= maxAge
-		self.size = size	
-		
-		self.color=color
-		self.is_dead = False
-
-	def update(self,dx=0.05,dy=0.05):
-		self.vx += dx* self.wind 
-		self.vy += dy*self.wind - 9.8/100
-
-		self.vx *= 1- 10/1000
-		self.vy *= 1- 10/1000
-
-		self.x += self.vx
-		self.y += self.vy
-		self.check_particle_age()		
-
-	def draw(self):
-		GL.glColor4fv(self.color)
-		GL.glPushMatrix()
-		GL.glTranslatef(self.x,self.y,0)
-		GL.glutSolidSphere(self.size,20,20)
-		GL.glPopMatrix()
-		GL.glutPostRedisplay()
-
-	def check_particle_age(self):		
-		self.age +=1 
-		self.is_dead = self.age >= self.max_age	
-
-		#Start ageing
-		self.color[3]= 1.0 - float(self.age)/float(self.max_age)
-            
 class ParticleSystem():
-	'''Container class for the Simulation.
-	Takes care to add Exploders at a given interval
-	'''
 	def __init__(self):		
 		self.x = 0
 		self.y = 0
-		self.timer = 0
+
+		self.t0 = time()
+		self.time = 0.0
+		self.interval = 0
+	
 		self.particleList = []
 
 	def addParticle(self):
-		speed = 5
-		speed *= (1 - random.uniform(0,5)/100)
-		angle = 270*3.14/180 + round(random.uniform(-0.5,0.5),2)
-		vx = speed * math.cos(angle) 
-		vy = -speed * math.sin(angle)
+		vx = 0.05
+		vy = 0.05
+		vz = 0.05
 		
-		f = Particle(30,10,vx,vy,(0.8,0.8,0.8,1),12)			
+		f = Particle(0,0,0, vx,vy,vz, [0.8,0.8,0.8,1], 0.5)			
 		self.particleList.append(f)
 
-	def update(self):
-		# Clock to launch fireworks,
-		interval = 30
-		self.timer += 1
+	def draw(self, **other_uniforms):		
+		if(self.interval > 10):
+			self.interval = 0
+			if(random.random() < 0.60):
+				self.addParticle()
 
-		if self.timer % interval == 0 or self.timer < 2:		
-			self.addParticle()
-		
-		for i in range(len(self.particleList)-1,0,-1):
-			p = self.particleList[i]
-			x = 0.01
-			y = 0				
-			p.update(x,y)
-			p.check_particle_age()			
+		for i in range(len(self.particleList) - 1,0, -1):
+			p = self.particleList[i]		
+			p.update(self.time)		
 			if p.is_dead:					
 				p.color = [0.0,0.0,0.0,0.0]				
 				self.particleList.pop(i)				
 			else:
-				p.draw()
+				p.draw(**other_uniforms)
+
+		self.interval += glfw.get_time() - self.time
+		self.time = time() - self.t0
+
+class Particle():
+	def __init__(self, x, y, z, vx, vy, vz, color, size, maxAge = 500):	
+		#Position
+		self.x = x		
+		self.y = y		
+		self.z = z
+	
+		#Speed
+		self.vx = vx
+		self.vy = vy
+		self.vz = vz
+
+		self.age = 0		
+		self.max_age = maxAge
+		self.size = size	
+
+		self.freqX = random.uniform(0, 1)
+		self.freqZ = random.uniform(0, 1)
+
+		self.phaseX = random.uniform(0, 20)
+		self.phaseZ = random.uniform(0, 20)
+
+		self.amplitudeX = random.uniform(0, 0.2)
+		self.amplitudeZ = random.uniform(0, 0.2)
+
+		self.color = color
+		self.is_dead = False
+
+		self.texture = Texture("scene/smoke.png")
+		self.quad = Quad(Shader("scene/particle.vert", "scene/particle.frag"))
+
+	def update(self, t):
+		currTime = glfw.get_time()
+		deltaTime = currTime - t
+
+		noise_x = self.amplitudeX * math.sin(self.freqX * currTime + self.phaseX) * math.sqrt(currTime/10)
+		noise_z = self.amplitudeZ * math.sin(self.freqZ * currTime + self.phaseZ) * math.sqrt(currTime/10)
+
+
+		self.x += self.vx * noise_x * deltaTime
+		self.y += self.vy * deltaTime
+		self.z += self.vz * noise_z * deltaTime
+		self.check_particle_age(deltaTime)
+
+	def draw(self, **other_uniforms):
+		other_uniforms["center"] = np.array([self.x, self.y, self.z], dtype=np.float32)
+		other_uniforms["size"] = np.array([self.size, self.size], dtype=np.float32)
+		other_uniforms["alpha"] = 1 - (self.age / self.max_age)
+		#other_uniforms["texture_map"] = self.texture
+
+		self.quad.draw(**other_uniforms)
+
+	def check_particle_age(self, deltaTime):		
+		self.age += deltaTime
+		self.is_dead = self.age >= self.max_age	
+
+
+class Quad(Mesh):
+	def __init__(self, shader):
+		position = np.array(((-0.5, -0.5, 0.0), (0.5, -0.5, 0.0), (0.5,  0.5, 0.0), (-0.5,  0.5, 0.0)), 'f')
+		tex_coord = np.array(((0,0), (1,0), (1,1), (0,1)), 'f')
+		#color = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 1)), 'f')
+		index = np.array((0, 1, 3, 3, 1, 2), np.uint32)
+		self.color = (1, 1, 1)
+		attributes = dict(position=position, tex_coord=tex_coord)
+		super().__init__(shader, index=index, attributes=attributes)
+
+	def draw(self, primitives=GL.GL_TRIANGLES, **uniforms):
+		super().draw(primitives=primitives, global_color=self.color, **uniforms)
