@@ -3,11 +3,18 @@ from terrain.terrain import Terrain
 from river.river import River
 from plant.plant import Cactus
 from texture import Textured, Texture
+from skybox.skybox import Skybox
 
 def main():
     viewer = Viewer()
+
     #load skybox
-    #TODO
+    #list_image_path = ["skybox/back.jpg", "skybox/bottom.jpg", "skybox/front.jpg", "skybox/left.jpg", "skybox/right.jpg", "skybox/top.jpg"]
+   
+    #skyboxShader = Shader("skybox/skybox.vert", "skybox/skybox.frag")
+    #skybox = Skybox(skyboxShader, list_image_path);
+    
+    #viewer.add(skybox)
 
     world_size = 200
 
