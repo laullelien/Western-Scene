@@ -10,6 +10,16 @@ from transform import rotate, translate
 from skybox.skybox import Skybox
 
 def main():
+    print("")
+    print("----------------------------------------------------------------------------------------------------------------------")
+    print("")
+    print("Controll keys:")
+    print("Space: Make the bird go higher")
+    print("B: Make the bird go lower")
+    print("")
+    print("----------------------------------------------------------------------------------------------------------------------")
+    print("")
+
     viewer = Viewer()
 
     #load skybox
