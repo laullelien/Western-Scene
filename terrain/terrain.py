@@ -10,8 +10,10 @@ from terrain.object import Object
 
 class Terrain(Mesh):
     def __init__(self, shader, size):
-        self.objects = list()
         self.size = size
+
+        self.objects = list()
+        self.objects.append(Object(np.array([self.size / 2, self.size / 2]), 20))
 
         self.__init_mountains(6)
         self.__init_river()
@@ -35,7 +37,7 @@ class Terrain(Mesh):
             (x_indices.flatten(), y_indices.flatten(), z_values.flatten())
         )
 
-        self.pos = flatten_circle(self.pos, np.array([200,200,0]), 20)
+        self.pos = flatten_circle(self.pos, np.array([self.size / 2, self.size / 2,0]), 20)
 
         # Compute indices and normals
         idx = np.arange(0, 6 * (self.size - 1) ** 2, 6)
@@ -109,6 +111,10 @@ class Terrain(Mesh):
                     np.linalg.norm(new_point - mnt.center)
                     < 4 * self.max_mountain_radius
                 ):
+                    peek = False
+                    break
+            for obj in self.objects:
+                if (np.linalg.norm(new_point - obj.center) < 4 * self.max_mountain_radius):
                     peek = False
                     break
             if peek:
@@ -218,7 +224,7 @@ class Terrain(Mesh):
         self.river_points = list()
         i = 1
         while True:
-            intersects_with_mountain = False
+            intersects = False
             starting_point = np.array([-1, np.random.randint(10, self.size - 10)])
             ending_point = np.array(
                 [self.size + 1, np.random.randint(10, self.size - 10)]
@@ -226,9 +232,14 @@ class Terrain(Mesh):
             for mountain in self.mountains:
                 dist = self.__dist(mountain.center, starting_point, ending_point)
                 if dist <= self.max_mountain_radius * 2:
-                    intersects_with_mountain = True
+                    intersects = True
                     break
-            if not intersects_with_mountain:
+            for obj in self.objects:
+                dist = self.__dist(obj.center, starting_point, ending_point)
+                if dist <= self.max_mountain_radius * 2:
+                    intersects = True
+                    break
+            if not intersects:
                 self.river_points.append(starting_point)
                 self.river_points.append(ending_point)
                 return
@@ -283,7 +294,6 @@ class Terrain(Mesh):
                 self.objects.append(Object(possibleLocation, objectRadius))
                 coord = self.pos[possibleLocation[0] * self.size + possibleLocation[1]]
                 return np.array([coord[0], coord[2], -coord[1]])
-
 
 def flatten_circle(points, c, radius):
     flattened_points = []

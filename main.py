@@ -20,7 +20,7 @@ def main():
     
     viewer.add(skybox)
 
-    world_size = 400
+    world_size = 200
 
     world_node = Node(transform=translate(-world_size/2, 0, world_size/2) @ rotate(axis=(1, 0, 0), angle=-90.))
 
