@@ -5,10 +5,12 @@ import OpenGL.GL as GL
 from random import randint
 from time import time
 from terrain.mountain import Mountain
+from terrain.object import Object
 
 
 class Terrain(Mesh):
     def __init__(self, shader, size):
+        self.objects = list()
         self.size = size
 
         self.__init_mountains(6)
@@ -252,3 +254,31 @@ class Terrain(Mesh):
             dist /= river_width
             return river_depth * (dist**2 - 1)
         return 0
+
+    def get_free_location(self, objectRadius):
+        while True:
+            possibleLocation = np.array(
+                [
+                    randint(
+                        0,
+                        self.size - 1
+                    ),
+                    randint(
+                        0,
+                        self.size - 1
+                    ),
+                ]
+            )
+            dist = self.__dist(possibleLocation, self.river_points[0], self.river_points[1])
+            if (dist <= 12 + objectRadius):
+                continue
+            for mountain in self.mountains:
+                dist = np.linalg.norm(mountain.center - possibleLocation)
+                if dist <= self.max_mountain_radius * 2 + objectRadius:
+                    continue
+            for obj in self.objects:
+                dist = np.linalg.norm(obj.center - possibleLocation)
+                if dist <= obj.radius + objectRadius:
+                    continue
+            self.objects.append(Object(possibleLocation, objectRadius))
+            return self.pos[possibleLocation[0] * self.size + possibleLocation[1]]
