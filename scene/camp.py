@@ -33,16 +33,29 @@ class Camp(Node):
 		tent.add(*load(file='scene/tent.obj', tex_file='scene/tent.png', shader=shader))
 
 		colorShader = Shader("plant/color.vert", "plant/color.frag")
-		bird = Node(transform=translate(y=10))
-		bird.add(Bird(colorShader))
+		self.birdHeight = 10
+		self.bird = Node(transform=translate(y=self.birdHeight))
+		self.bird.add(Bird(colorShader))
 
-		self.add(bird)
+		self.add(self.bird)
 		self.add(firepit)
 		self.add(tent)
 
 	def draw(self, model=identity(), **other_uniforms):
 		self.emmiter.draw(**other_uniforms)
 		super().draw(model, **other_uniforms)
+
+	def key_handler(self, key):
+		if key == glfw.KEY_B:
+			if(self.birdHeight > 8):
+				self.birdHeight -= 0.05
+				self.bird.transform = translate(y=self.birdHeight)
+
+		elif key == glfw.KEY_SPACE:
+			if(self.birdHeight < 30):
+				self.birdHeight += 0.05
+				self.bird.transform = translate(y=self.birdHeight)
+
 
 class ParticleSystem():
 	def __init__(self, x, y, z):		

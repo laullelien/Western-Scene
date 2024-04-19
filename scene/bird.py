@@ -26,10 +26,6 @@ class Bird(Node):
         keynode.add(*load(file='scene/bird.obj', shader=shader))  # just load cube from file
         self.add(keynode)
 
-    def key_handler(self, key):
-        if key == glfw.KEY_C:
-            self.color = (0, 0, 0)
-
     def points_on_circle(self, radius, num_points):
         points = {}
         for i in range(num_points):
