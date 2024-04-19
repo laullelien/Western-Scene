@@ -79,7 +79,7 @@ class Terrain(Mesh):
             k_a=(0.3, 0.2, 0.1),
             k_d=(0.8, 0.8, 0.8),
             light_dir=(0.5, 0.5, 0),
-            k_s=(0.6, 0.6, 0.6),
+            k_s=(0.3, 0.3, 0.3),
             s=20,
             index=index,
         )
@@ -257,28 +257,27 @@ class Terrain(Mesh):
 
     def get_free_location(self, objectRadius):
         while True:
+            possible = True
             possibleLocation = np.array(
                 [
-                    randint(
-                        0,
-                        self.size - 1
-                    ),
-                    randint(
-                        0,
-                        self.size - 1
-                    ),
+                    randint(0, self.size - 1),
+                    randint(0, self.size - 1),
                 ]
             )
-            dist = self.__dist(possibleLocation, self.river_points[0], self.river_points[1])
-            if (dist <= 12 + objectRadius):
+            dist = self.__dist(
+                possibleLocation, self.river_points[0], self.river_points[1]
+            )
+            if dist <= 12 + objectRadius:
                 continue
             for mountain in self.mountains:
                 dist = np.linalg.norm(mountain.center - possibleLocation)
                 if dist <= self.max_mountain_radius * 2 + objectRadius:
-                    continue
+                    possible = False
             for obj in self.objects:
                 dist = np.linalg.norm(obj.center - possibleLocation)
                 if dist <= obj.radius + objectRadius:
-                    continue
-            self.objects.append(Object(possibleLocation, objectRadius))
-            return self.pos[possibleLocation[0] * self.size + possibleLocation[1]]
+                    possible = False
+            if possible:
+                self.objects.append(Object(possibleLocation, objectRadius))
+                coord = self.pos[possibleLocation[0] * self.size + possibleLocation[1]]
+                return np.array([coord[0], coord[2], -coord[1]])
