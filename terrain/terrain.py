@@ -35,7 +35,7 @@ class Terrain(Mesh):
             (x_indices.flatten(), y_indices.flatten(), z_values.flatten())
         )
 
-        self.pos = flatten_circle(self.pos, np.array([66,200,0]), 20)
+        self.pos = flatten_circle(self.pos, np.array([200,200,0]), 20)
 
         # Compute indices and normals
         idx = np.arange(0, 6 * (self.size - 1) ** 2, 6)
@@ -301,13 +301,3 @@ def flatten_circle(points, c, radius):
             z_flattened = z  # Points outside the circle remain unchanged
         flattened_points.append([x, y, z_flattened])
     return np.array(flattened_points)
-
-def get_z_value(x, y, matrix):
-    # Find the index of the row where x and y match
-    index = np.where((matrix[:, 0] == x) & (matrix[:, 1] == y))[0]
-    
-    # Check if the index is valid
-    if len(index) == 0:
-        return None  # Return None if no matching (x, y) pair found
-    else:
-        return matrix[index, 2][0]  # Return the corresponding z-coordinate

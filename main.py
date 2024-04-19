@@ -22,7 +22,7 @@ def main():
 
     world_size = 400
 
-    world_node = Node(transform=translate(-world_size/6, 0, world_size/2) @ rotate(axis=(1, 0, 0), angle=-90.))
+    world_node = Node(transform=translate(-world_size/2, 0, world_size/2) @ rotate(axis=(1, 0, 0), angle=-90.))
 
     #load files necessary for terrain generation
     terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
@@ -36,7 +36,8 @@ def main():
 
     #load plants
     textureShader = Shader("scene/shaders/texture.vert", "scene/shaders/texture.frag")
-    addCactus(world_node, terrain, textureShader, 50)
+    cactusShader = Shader("scene/shaders/texture.vert", "scene/shaders/cactus.frag")
+    addCactus(world_node, terrain, cactusShader, 50)
 
     colorShader = Shader("plant/color.vert", "plant/color.frag")
 
