@@ -37,7 +37,7 @@ class Terrain(Mesh):
             (x_indices.flatten(), y_indices.flatten(), z_values.flatten())
         )
 
-        self.pos = flatten_circle(self.pos, np.array([self.size / 2, self.size / 2,0]), 20)
+        flatten_circle(self.pos, size, np.array([self.size / 2, self.size / 2,0]), 20)
 
         # Compute indices and normals
         idx = np.arange(0, 6 * (self.size - 1) ** 2, 6)
@@ -295,19 +295,24 @@ class Terrain(Mesh):
                 coord = self.pos[possibleLocation[0] * self.size + possibleLocation[1]]
                 return np.array([coord[0], coord[2], -coord[1]])
 
-def flatten_circle(points, c, radius):
-    flattened_points = []
-    for point in points:
-        x, y, z = point
-        distance = np.sqrt((x - c[0]) ** 2 + (y - c[1]) ** 2)  # Euclidean distance from center
-        
-        if distance <= radius:
-            #print(point)
-            # Calculate the interpolation factor based on the distance
-            t = 1 - (distance / radius) ** 2
-            # Apply interpolation to z-coordinate
-            z_flattened = z * (1 - t * 1)
-        else:
-            z_flattened = z  # Points outside the circle remain unchanged
-        flattened_points.append([x, y, z_flattened])
-    return np.array(flattened_points)
+def flatten_circle(points, size, c, radius):
+    x_min = int(max(0, c[0] - radius))
+    x_max = int(min(size - 1, c[0] + radius))
+    y_min = int(max(0, c[1] - radius))
+    y_max = int(min(size - 1, c[1] + radius))
+
+    for x in range(x_min, x_max + 1):
+        for y in range(y_min, y_max + 1):
+            point = points[y * size + x]
+            z = point[2]
+            distance = np.sqrt((x - c[0]) ** 2 + (y - c[1]) ** 2)  # Euclidean distance from center
+            
+            if distance <= radius:
+                #print(point)
+                # Calculate the interpolation factor based on the distance
+                t = 1 - (distance / radius) ** 2
+                # Apply interpolation to z-coordinate
+                z_flattened = z * (1 - t * 1)
+            else:
+                z_flattened = z  # Points outside the circle remain unchanged
+            points[y * size + x][2] = z_flattened
