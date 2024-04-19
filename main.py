@@ -10,6 +10,16 @@ from transform import rotate, translate
 from skybox.skybox import Skybox
 
 def main():
+    print("")
+    print("----------------------------------------------------------------------------------------------------------------------")
+    print("")
+    print("Controll keys:")
+    print("Space: Make the bird go higher")
+    print("B: Make the bird go lower")
+    print("")
+    print("----------------------------------------------------------------------------------------------------------------------")
+    print("")
+
     viewer = Viewer()
 
     #load skybox
@@ -37,7 +47,7 @@ def main():
     #load plants
     textureShader = Shader("scene/shaders/texture.vert", "scene/shaders/texture.frag")
     cactusShader = Shader("scene/shaders/texture.vert", "scene/shaders/cactus.frag")
-    addCactus(world_node, terrain, cactusShader, 50)
+    addCactus(world_node, terrain, cactusShader, 20)
 
     colorShader = Shader("plant/color.vert", "plant/color.frag")
 
