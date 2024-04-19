@@ -15,7 +15,7 @@ from scene.bird.bird import Bird
 
 class Camp(Node):
 	""" Very simple cube based on provided load function """
-	def __init__(self, shader):
+	def __init__(self, shader, light):
 		super().__init__()
 
 		centerX = 0
@@ -25,17 +25,17 @@ class Camp(Node):
 		self.transform = translate(centerX, centerY, centerZ)
 
 		firepit = Node(transform=scale(1.2))
-		firepit.add(*load(file='scene/firepit/firepit.obj', tex_file='scene/firepit/firepit.png', shader=shader))
+		firepit.add(*load(file='scene/firepit/firepit.obj', tex_file='scene/firepit/firepit.png', shader=shader, light_dir=light))
 
 		self.emmiter = ParticleSystem(centerX, centerY, centerZ)
 
 		tent = Node(transform=translate(z=11) @ scale(0.5) @ rotate(axis=(0,1,0), angle=-23))
-		tent.add(*load(file='scene/tent/tent.obj', tex_file='scene/tent/tent.png', shader=shader))
+		tent.add(*load(file='scene/tent/tent.obj', tex_file='scene/tent/tent.png', shader=shader, light_dir=light))
 
-		colorShader = Shader("plant/color.vert", "plant/color.frag")
+		birdShader = Shader("scene/shaders/bird.vert", "scene/shaders/bird.frag")
 		self.birdHeight = 20
 		self.bird = Node(transform=translate(y=self.birdHeight))
-		self.bird.add(Bird(colorShader))
+		self.bird.add(Bird(birdShader, light))
 
 		self.add(self.bird)
 		self.add(firepit)

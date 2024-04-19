@@ -2,6 +2,7 @@ from core import Viewer, Shader, Mesh
 from terrain.terrain import Terrain
 from plant.plant import Cactus
 from scene.camp import Camp
+from scene.bird.bird import Bird
 import OpenGL.GL as GL
 
 def main():
@@ -24,7 +25,9 @@ def main():
 
     colorShader = Shader("plant/color.vert", "plant/color.frag")
 
-    viewer.add(Camp(textureShader))
+    viewer.add(Camp(textureShader, (1, -0.5, 0)))
+
+    #viewer.add(Bird(Shader("scene/shaders/bird.vert", "scene/shaders/bird.frag")))
 
     viewer.add(Axis(colorShader))
 

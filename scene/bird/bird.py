@@ -12,18 +12,18 @@ from transform import quaternion, vec, quaternion_from_euler
 from animation import KeyFrameControlNode
 
 class Bird(Node):
-    def __init__(self, shader):
+    def __init__(self, shader, light):
         super().__init__()
 
         animationResolution = 20
         radius = 10
 
-        translate_keys = self.points_on_circle(radius, animationResolution)
-        rotate_keys = self.rotation_in_place(animationResolution)
+        translate_keys = self.points_on_circle(radius, animationResolution) #{0: vec(0,0,0)} 
+        rotate_keys = self.rotation_in_place(animationResolution) #{0: quaternion()} 
         scale_keys = {0: 0.1}
         keynode = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
 
-        keynode.add(*load(file='scene/bird/bird.obj', shader=shader))  # just load cube from file
+        keynode.add(*load(file='scene/bird/bird.obj', shader=shader, light_dir=light))  # just load cube from file
         self.add(keynode)
 
     def points_on_circle(self, radius, num_points):
