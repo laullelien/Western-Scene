@@ -11,6 +11,20 @@ uniform vec3 w_camera_position;
 
 out vec4 out_color;
 
+vec4 fog_calc(vec4 shadedColor) {
+    // Fog parameters
+    float fog_maxdist = 500.0;
+    float fog_mindist = 50;
+    vec4 fog_colour = vec4(0.6, 0.6, 0.6, 1.0);
+    
+    // Calculate fog
+    float dist = length(w_position - w_camera_position); // This is not it
+    float fog_factor = (fog_maxdist - dist) / (fog_maxdist - fog_mindist);
+    fog_factor = clamp(fog_factor, 0.0, 1.0);
+
+    return mix(fog_colour, shadedColor, fog_factor);
+}
+
 void main() {
     // Compute all vectors, oriented outwards from the fragment
     vec3 l = normalize(-light_dir);
@@ -20,5 +34,7 @@ void main() {
     vec3 diffuse_color = k_d * max(dot(w_normal, l), .0);
     vec3 specular_color = k_s * pow(max(dot(r, v), .0), s);
 
-    out_color = vec4(k_a, 1) + vec4(diffuse_color, 1) + vec4(specular_color, 1);
+    vec4 shadedColor = vec4(k_a, 1) + vec4(diffuse_color, 1) + vec4(specular_color, 1);
+
+    out_color = fog_calc(shadedColor);
 }
