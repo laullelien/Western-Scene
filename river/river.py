@@ -41,7 +41,7 @@ class River(Mesh):
             attributes=dict(position=self.pos),
             index=index,
             time=self.time,
-            k_d=(.8, 0.8, 0.8),
+            k_d=(.6, 0.6, 0.6),
             k_a=(.3, .75, 0.89, 1),
             light_dir=(.5, .5, 0),
             k_s=(.6, 0.6, 0.6),

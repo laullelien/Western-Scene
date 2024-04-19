@@ -1,19 +1,26 @@
 import OpenGL.GL as GL 
 from PIL import Image
-from core import Node, Shader
+from core import Node, Shader, Mesh
+from texture import Textured
+import numpy as np
 
 #https://learnopengl.com/Advanced-OpenGL/Cubemaps
 # https://www.youtube.com/watch?v=ZwNDBOUmyLY  17:40
 
 
-class Skybox():
+class Skybox(Textured):
     def __init__(self, shader, list_image_paths):
-        
         self.shader = shader
         self.texture_id = self.load_skybox_texture(list_image_paths)
+        cube_pos = np.array([[-1.0, -1.0, 1.0], [1.0, -1.0, 1.0], [1.0,  1.0, 1.0], [-1.0, 1.0, 1.0], [-1.0, -1.0, -1.0], [1.0, -1.0, -1.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]])
+        index = np.array([0, 2, 1, 2, 0, 3, 1, 6, 5, 6, 1, 2, 7, 5, 6, 5, 7, 4, 4, 3, 0, 3, 4, 7, 4, 1, 5, 1, 4, 0, 3, 6, 2, 6, 3, 7])
+        cube = Mesh(shader, attributes=dict(aPos=cube_pos), index=index)
+        super().__init__(cube, textures=self)
         
     def load_skybox_texture(self, list_image_paths):
-        texture = GL.glGenTextures(1)
+        self.type = GL.GL_TEXTURE_CUBE_MAP
+        self.glid = GL.glGenTextures(1)
+        texture = self.glid
         GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, texture)
 
         face_targets = [GL.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -37,80 +44,8 @@ class Skybox():
         
         return texture
 
-    def bind(self, unit=0):
-        GL.glActiveTexture(GL.GL_TEXTURE0 + unit)
-        GL.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, self.texture_id)
-
-    def activate_shader(self):
-        self.shader.use()
-
     def draw(self, primitives=GL.GL_TRIANGLES, attributes=None, **uniforms):
-        # Activer le shader de la skybox
-        self.activate_shader()
-
-        # Lier la texture de la skybox
-        self.bind()
-
-        # Définir les coordonnées des sommets du cube
-        skybox_vertices = [
-            -1.0,  1.0, -1.0,
-            -1.0, -1.0, -1.0,
-             1.0, -1.0, -1.0,
-             1.0, -1.0, -1.0,
-             1.0,  1.0, -1.0,
-            -1.0,  1.0, -1.0,
-
-            -1.0, -1.0,  1.0,
-            -1.0, -1.0, -1.0,
-            -1.0,  1.0, -1.0,
-            -1.0,  1.0, -1.0,
-            -1.0,  1.0,  1.0,
-            -1.0, -1.0,  1.0,
-
-             1.0, -1.0, -1.0,
-             1.0, -1.0,  1.0,
-             1.0,  1.0,  1.0,
-             1.0,  1.0,  1.0,
-             1.0,  1.0, -1.0,
-             1.0, -1.0, -1.0,
-
-            -1.0, -1.0,  1.0,
-            -1.0,  1.0,  1.0,
-             1.0,  1.0,  1.0,
-             1.0,  1.0,  1.0,
-             1.0, -1.0,  1.0,
-            -1.0, -1.0,  1.0,
-
-            -1.0,  1.0, -1.0,
-             1.0,  1.0, -1.0,
-             1.0,  1.0,  1.0,
-             1.0,  1.0,  1.0,
-            -1.0,  1.0,  1.0,
-            -1.0,  1.0, -1.0,
-
-            -1.0, -1.0, -1.0,
-            -1.0, -1.0,  1.0,
-             1.0, -1.0, -1.0,
-             1.0, -1.0, -1.0,
-            -1.0, -1.0,  1.0,
-             1.0, -1.0,  1.0
-        ]
-
-        # Définir le VAO et VBO pour le cube
-        cube_vao = GL.glGenVertexArrays(1)
-        cube_vbo = GL.glGenBuffers(1)
-        GL.glBindVertexArray(cube_vao)
-        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, cube_vbo)
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, len(skybox_vertices) * 4, (GL.GLfloat * len(skybox_vertices))(*skybox_vertices), GL.GL_STATIC_DRAW)
-        GL.glEnableVertexAttribArray(0)
-        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, 3 * 4, GL.ctypes.c_void_p(0))
-
-        # Dessiner le cube
-        GL.glDrawArrays(GL.GL_TRIANGLES, 0, 36)
-
-        # Libérer la mémoire
-        GL.glBindVertexArray(0)
-        GL.glDeleteBuffers(1, [cube_vbo])
-        GL.glDeleteVertexArrays(1, [cube_vao])
-    
-        
+        GL.glDepthMask(GL.GL_FALSE)
+        GL.glDisable(GL.GL_DEPTH_TEST)
+        super().draw(primitives, **uniforms)
+        GL.glDepthMask(GL.GL_TRUE)
