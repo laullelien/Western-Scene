@@ -23,7 +23,7 @@ class Bird(Node):
         scale_keys = {0: 0.1}
         keynode = KeyFrameControlNode(translate_keys, rotate_keys, scale_keys)
 
-        keynode.add(*load(file='scene/bird.obj', shader=shader))  # just load cube from file
+        keynode.add(*load(file='scene/bird/bird.obj', shader=shader))  # just load cube from file
         self.add(keynode)
 
     def points_on_circle(self, radius, num_points):

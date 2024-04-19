@@ -11,7 +11,7 @@ import glfw                         # lean window system wrapper for OpenGL
 from core import Node, load, Mesh, Shader, Texture
 from transform import translate, identity, rotate, scale
 from time import time
-from scene.bird import Bird
+from scene.bird.bird import Bird
 
 class Camp(Node):
 	""" Very simple cube based on provided load function """
@@ -25,15 +25,15 @@ class Camp(Node):
 		self.transform = translate(centerX, centerY, centerZ)
 
 		firepit = Node(transform=scale(1.2))
-		firepit.add(*load(file='scene/firepit.obj', tex_file='scene/firepit.png', shader=shader))
+		firepit.add(*load(file='scene/firepit/firepit.obj', tex_file='scene/firepit/firepit.png', shader=shader))
 
 		self.emmiter = ParticleSystem(centerX, centerY, centerZ)
 
 		tent = Node(transform=translate(z=11) @ scale(0.5) @ rotate(axis=(0,1,0), angle=-23))
-		tent.add(*load(file='scene/tent.obj', tex_file='scene/tent.png', shader=shader))
+		tent.add(*load(file='scene/tent/tent.obj', tex_file='scene/tent/tent.png', shader=shader))
 
 		colorShader = Shader("plant/color.vert", "plant/color.frag")
-		self.birdHeight = 10
+		self.birdHeight = 20
 		self.bird = Node(transform=translate(y=self.birdHeight))
 		self.bird.add(Bird(colorShader))
 
@@ -125,7 +125,7 @@ class Particle():
 		self.color = color
 		self.is_dead = False
 
-		self.quad = Quad(Shader("scene/particle.vert", "scene/particle.frag"))
+		self.quad = Quad(Shader("scene/shaders/particle.vert", "scene/shaders/particle.frag"))
 
 	def update(self, t):
 		currTime = glfw.get_time()

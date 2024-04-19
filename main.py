@@ -2,7 +2,6 @@ from core import Viewer, Shader, Mesh
 from terrain.terrain import Terrain
 from plant.plant import Cactus
 from scene.camp import Camp
-from scene.bird import Bird
 import OpenGL.GL as GL
 
 def main():
@@ -20,7 +19,7 @@ def main():
     #viewer.add(River(riverShader, world_size))
 
     #load plants
-    textureShader = Shader("scene/texture.vert", "scene/texture.frag")
+    textureShader = Shader("scene/shaders/texture.vert", "scene/shaders/texture.frag")
     #viewer.add(Cactus(textureShader))
 
     colorShader = Shader("plant/color.vert", "plant/color.frag")
