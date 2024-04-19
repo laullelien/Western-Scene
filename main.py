@@ -4,17 +4,25 @@ from plant.plant import Cactus
 from scene.camp import Camp
 from scene.bird.bird import Bird
 import OpenGL.GL as GL
+from texture import Textured, Texture
+from skybox.skybox import Skybox
 
 def main():
     viewer = Viewer()
+
     #load skybox
-    #TODO
+    list_image_path = ["skybox/right.bmp", "skybox/left.bmp", "skybox/top.bmp", "skybox/bottom.bmp", "skybox/front.bmp", "skybox/back.bmp"]
+   
+    skyboxShader = Shader("skybox/skybox.vert", "skybox/skybox.frag")
+    skybox = Skybox(skyboxShader, list_image_path);
+    
+    viewer.add(skybox)
 
     world_size = 200
 
     #load files necessary for terrain generation
     terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
-    #viewer.add(Terrain(terrainShader, world_size))
+    viewer.add(Textured(Terrain(terrainShader, world_size), texture = Texture("terrain/texture/rock_texture.jpg")))
 
     #riverShader = Shader("river/river.vert", "river/river.frag")
     #viewer.add(River(riverShader, world_size))
