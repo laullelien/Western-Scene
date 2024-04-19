@@ -35,6 +35,8 @@ class Terrain(Mesh):
             (x_indices.flatten(), y_indices.flatten(), z_values.flatten())
         )
 
+        self.pos = flatten_circle(self.pos, np.array([66,200,0]), 20)
+
         # Compute indices and normals
         idx = np.arange(0, 6 * (self.size - 1) ** 2, 6)
         i = np.arange(0, self.size - 1).reshape(-1, 1) * self.size
@@ -281,3 +283,21 @@ class Terrain(Mesh):
                 self.objects.append(Object(possibleLocation, objectRadius))
                 coord = self.pos[possibleLocation[0] * self.size + possibleLocation[1]]
                 return np.array([coord[0], coord[2], -coord[1]])
+
+# I'm only human
+def flatten_circle(points, c, radius):
+    flattened_points = []
+    for point in points:
+        x, y, z = point
+        distance = np.sqrt((x - c[0]) ** 2 + (y - c[1]) ** 2)  # Euclidean distance from center
+        
+        if distance <= radius:
+            #print(point)
+            # Calculate the interpolation factor based on the distance
+            t = 1 - (distance / radius) ** 2
+            # Apply interpolation to z-coordinate
+            z_flattened = z * (1 - t * 1)
+        else:
+            z_flattened = z  # Points outside the circle remain unchanged
+        flattened_points.append([x, y, z_flattened])
+    return np.array(flattened_points)

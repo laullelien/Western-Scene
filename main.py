@@ -6,7 +6,7 @@ from scene.bird.bird import Bird
 from river.river import River
 import OpenGL.GL as GL
 from texture import Textured, Texture
-from transform import rotate
+from transform import rotate, translate
 from skybox.skybox import Skybox
 
 def main():
@@ -20,9 +20,9 @@ def main():
     
     viewer.add(skybox)
 
-    world_size = 200
+    world_size = 400
 
-    world_node = Node(transform=rotate(axis=(1, 0, 0), angle=-90.))
+    world_node = Node(transform=translate(-world_size/6, 0, world_size/2) @ rotate(axis=(1, 0, 0), angle=-90.))
 
     #load files necessary for terrain generation
     terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
