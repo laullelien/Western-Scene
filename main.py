@@ -21,8 +21,8 @@ def main():
     world_size = 200
 
     #load files necessary for terrain generation
-    terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
-    viewer.add(Textured(Terrain(terrainShader, world_size), texture = Texture("terrain/texture/rock_texture.jpg")))
+    #terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
+    #viewer.add(Textured(Terrain(terrainShader, world_size), texture = Texture("terrain/texture/rock_texture.jpg")))
 
     #riverShader = Shader("river/river.vert", "river/river.frag")
     #viewer.add(River(riverShader, world_size))

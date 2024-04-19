@@ -21,10 +21,10 @@ class Cactus(Node):
 
         cube = Cube(shader)
 
-        trunk = Node(transform=translate(z=-10) @ scale(x=1,y=5,z=1) @ rotate(axis=(0,1,0), angle=-45))
+        trunk = Node(transform=scale(x=1,y=5,z=1) @ rotate(axis=(0,1,0), angle=-45))
         trunk.add(cube)
 
-        branch1 = Node(transform=translate(z=1.5, y=0.15) @ scale(x=0.7,y=0.15,z=2) @ rotate(angle=90))
+        branch1 = Node(transform=translate(z=1.3, y=0.15) @ scale(x=0.5,y=0.13,z=1.8) @ rotate(angle=90))
         branch1.add(cube)
 
         branch11 = Node(transform=translate(z=-1.5, y=0.35) @ rotate(angle=-90) @ scale(x=1,y=2,z=0.3))

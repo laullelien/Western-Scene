@@ -203,7 +203,7 @@ except ImportError:
     KeyFrameControlNode, Skinned = None, None
 
 
-def load(file, shader, tex_file=None, **params):
+def load(file, shader, tex_file=None, normal_file=None, **params):
     """ load resources from file using assimp, return node hierarchy """
     try:
         pp = assimpcy.aiPostProcessSteps
@@ -233,6 +233,9 @@ def load(file, shader, tex_file=None, **params):
             tfile = None
         if Texture is not None and tfile:
             mat.properties['diffuse_map'] = Texture(tex_file=tfile)
+
+    if(normal_file is not None):
+        mat.properties['normal_map'] = Texture(tex_file=normal_file)
 
     # ----- load animations
     def conv(assimp_keys, ticks_per_second):
@@ -315,7 +318,11 @@ def load(file, shader, tex_file=None, **params):
         new_mesh = Mesh(shader, attributes, index, **{**uniforms, **params})
 
         if Textured is not None and 'diffuse_map' in mat:
-            new_mesh = Textured(new_mesh, diffuse_map=mat['diffuse_map'])
+            if 'normal_map' in mat:
+                new_mesh = Textured(new_mesh, diffuse_map=mat['diffuse_map'], normal_map=mat['normal_map'])
+            else:
+                new_mesh = Textured(new_mesh, diffuse_map=mat['diffuse_map'])
+        
         if Skinned and mesh.HasBones:
             # make bone lookup array & offset matrix, indexed by bone index (id)
             bone_nodes = [nodes[bone.mName] for bone in mesh.mBones]

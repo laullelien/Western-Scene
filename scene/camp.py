@@ -29,8 +29,15 @@ class Camp(Node):
 
 		self.emmiter = ParticleSystem(centerX, centerY, centerZ)
 
+		tentShader = Shader("scene/shaders/texture.vert", "scene/shaders/tent.frag")
 		tent = Node(transform=translate(z=11) @ scale(0.5) @ rotate(axis=(0,1,0), angle=-23))
-		tent.add(*load(file='scene/tent/tent.obj', tex_file='scene/tent/tent.png', shader=shader, light_dir=light))
+		tent.add(*load(
+			file='scene/tent/tent.obj', 
+			tex_file='scene/tent/tent.png', 
+			normal_file='scene/tent/tent_normal.png',
+			shader=tentShader, 
+			light_dir=light
+			))
 
 		birdShader = Shader("scene/shaders/bird.vert", "scene/shaders/bird.frag")
 		self.birdHeight = 20
