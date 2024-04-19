@@ -37,7 +37,7 @@ def main():
     #load plants
     textureShader = Shader("scene/shaders/texture.vert", "scene/shaders/texture.frag")
     cactusShader = Shader("scene/shaders/texture.vert", "scene/shaders/cactus.frag")
-    addCactus(world_node, terrain, cactusShader, 50)
+    addCactus(world_node, terrain, cactusShader, 20)
 
     colorShader = Shader("plant/color.vert", "plant/color.frag")
 
