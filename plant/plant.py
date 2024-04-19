@@ -8,6 +8,7 @@ import glfw                         # lean window system wrapper for OpenGL
 
 from core import Shader, Mesh, Viewer, Node, load
 from transform import translate, identity, rotate, scale
+from terrain.terrain import get_z_value
 
 class Cube(Node):
     """ Very simple cube based on provided load function """
@@ -48,5 +49,9 @@ class Cactus(Node):
 def addCactus(viewer, terrain, shader, numCactus):
     for i in range(numCactus):
         pos = terrain.get_free_location(10)
+        pos[1] += 2.1
         #TODO: add cactus.height/2 to pos[1]
-        viewer.add(Cactus(shader, pos))
+
+        cactus = Cactus(shader, pos)
+        cactus.transform = rotate(axis=(1, 0, 0), angle=90.)
+        viewer.add(cactus)

@@ -284,7 +284,7 @@ class Terrain(Mesh):
                 coord = self.pos[possibleLocation[0] * self.size + possibleLocation[1]]
                 return np.array([coord[0], coord[2], -coord[1]])
 
-# I'm only human
+
 def flatten_circle(points, c, radius):
     flattened_points = []
     for point in points:
@@ -301,3 +301,13 @@ def flatten_circle(points, c, radius):
             z_flattened = z  # Points outside the circle remain unchanged
         flattened_points.append([x, y, z_flattened])
     return np.array(flattened_points)
+
+def get_z_value(x, y, matrix):
+    # Find the index of the row where x and y match
+    index = np.where((matrix[:, 0] == x) & (matrix[:, 1] == y))[0]
+    
+    # Check if the index is valid
+    if len(index) == 0:
+        return None  # Return None if no matching (x, y) pair found
+    else:
+        return matrix[index, 2][0]  # Return the corresponding z-coordinate
