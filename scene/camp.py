@@ -11,6 +11,7 @@ import glfw                         # lean window system wrapper for OpenGL
 from core import Node, load, Mesh, Shader, Texture
 from transform import translate, identity, rotate, scale
 from time import time
+from scene.bird import Bird
 
 class Camp(Node):
 	""" Very simple cube based on provided load function """
@@ -31,6 +32,11 @@ class Camp(Node):
 		tent = Node(transform=translate(z=11) @ scale(0.5) @ rotate(axis=(0,1,0), angle=-23))
 		tent.add(*load(file='scene/tent.obj', tex_file='scene/tent.png', shader=shader))
 
+		colorShader = Shader("plant/color.vert", "plant/color.frag")
+		bird = Node(transform=translate(y=10))
+		bird.add(Bird(colorShader))
+
+		self.add(bird)
 		self.add(firepit)
 		self.add(tent)
 
