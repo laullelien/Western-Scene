@@ -1,8 +1,9 @@
 from core import Viewer, Shader, Mesh
 from terrain.terrain import Terrain
-from plant.plant import Cactus
+from plant.plant import addCactus
 from scene.camp import Camp
 from scene.bird.bird import Bird
+from river.river import River
 import OpenGL.GL as GL
 from texture import Textured, Texture
 from skybox.skybox import Skybox
@@ -21,15 +22,16 @@ def main():
     world_size = 200
 
     #load files necessary for terrain generation
-    #terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
-    #viewer.add(Textured(Terrain(terrainShader, world_size), texture = Texture("terrain/texture/rock_texture.jpg")))
+    terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
+    terrain = Terrain(terrainShader, world_size)
+    viewer.add(Textured(terrain, texture = Texture("terrain/texture/rock_texture.jpg")))
 
-    #riverShader = Shader("river/river.vert", "river/river.frag")
-    #viewer.add(River(riverShader, world_size))
+    riverShader = Shader("river/river.vert", "river/river.frag")
+    viewer.add(River(riverShader, world_size))
 
     #load plants
     textureShader = Shader("scene/shaders/texture.vert", "scene/shaders/texture.frag")
-    #viewer.add(Cactus(textureShader))
+    addCactus(viewer, terrain, textureShader, 10)
 
     colorShader = Shader("plant/color.vert", "plant/color.frag")
 

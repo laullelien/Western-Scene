@@ -16,12 +16,12 @@ class Cube(Node):
         self.add(*load(file='plant/cube.obj', tex_file='plant/cube.png', shader=shader))  # just load cube from file
 
 class Cactus(Node):
-    def __init__(self, shader):
+    def __init__(self, shader, pos):
         super().__init__()
 
         cube = Cube(shader)
 
-        trunk = Node(transform=scale(x=1,y=5,z=1) @ rotate(axis=(0,1,0), angle=-45))
+        trunk = Node(transform=translate(pos[0], pos[1], pos[2]) @ scale(x=1,y=5,z=1) @ rotate(axis=(0,1,0), angle=-45))
         trunk.add(cube)
 
         branch1 = Node(transform=translate(z=1.3, y=0.15) @ scale(x=0.5,y=0.13,z=1.8) @ rotate(angle=90))
@@ -44,3 +44,8 @@ class Cactus(Node):
         trunk.add(branch2)
 
         self.add(trunk)  # just load cube
+
+def addCactus(viewer, terrain, shader, numCactus):
+    for i in range(numCactus):
+        pos = terrain.get_free_location(10)
+        viewer.add(Cactus(shader, pos))
