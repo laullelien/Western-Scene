@@ -48,4 +48,5 @@ class Cactus(Node):
 def addCactus(viewer, terrain, shader, numCactus):
     for i in range(numCactus):
         pos = terrain.get_free_location(10)
+        #TODO: add cactus.height/2 to pos[1]
         viewer.add(Cactus(shader, pos))
