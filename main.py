@@ -9,7 +9,7 @@ def main():
     viewer = Viewer()
 
     #load skybox
-    list_image_path = ["skybox/right.jpg", "skybox/left.jpg", "skybox/top.jpg", "skybox/bottom.jpg", "skybox/front.jpg", "skybox/back.jpg"]
+    list_image_path = ["skybox/right.bmp", "skybox/left.bmp", "skybox/top.bmp", "skybox/bottom.bmp", "skybox/front.bmp", "skybox/back.bmp"]
    
     skyboxShader = Shader("skybox/skybox.vert", "skybox/skybox.frag")
     skybox = Skybox(skyboxShader, list_image_path);
@@ -19,8 +19,8 @@ def main():
     world_size = 200
 
     #load files necessary for terrain generation
-    #terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
-    #viewer.add(Textured(Terrain(terrainShader, world_size), texture = Texture("terrain/texture/rock_texture.jpg")))
+    terrainShader = Shader("terrain/terrain.vert", "terrain/terrain.frag")
+    viewer.add(Textured(Terrain(terrainShader, world_size), texture = Texture("terrain/texture/rock_texture.jpg")))
 
     riverShader = Shader("river/river.vert", "river/river.frag")
     viewer.add(River(riverShader, world_size))

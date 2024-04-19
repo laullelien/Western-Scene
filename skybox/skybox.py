@@ -48,4 +48,5 @@ class Skybox(Textured):
         GL.glDepthMask(GL.GL_FALSE)
         GL.glDisable(GL.GL_DEPTH_TEST)
         super().draw(primitives, **uniforms)
+        GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glDepthMask(GL.GL_TRUE)
