@@ -43,8 +43,6 @@ def main():
 
     viewer.add(Camp(textureShader, (1, -0.5, 0)))
 
-    #viewer.add(Bird(Shader("scene/shaders/bird.vert", "scene/shaders/bird.frag")))
-
     viewer.add(Axis(colorShader))
 
     GL.glEnable(GL.GL_BLEND)

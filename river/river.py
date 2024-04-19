@@ -1,4 +1,4 @@
-from core import Mesh, Shader
+from core import Mesh
 import numpy as np
 import OpenGL.GL as GL
 from time import time

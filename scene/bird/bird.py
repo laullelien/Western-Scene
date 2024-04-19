@@ -1,14 +1,8 @@
-import sys                          # for system arguments
+
 import math
 
-# External, non built-in modules
-import OpenGL.GL as GL              # standard Python OpenGL wrapper
-import numpy as np                  # all matrix manipulations & OpenGL args
-from itertools import cycle
-import glfw                         # lean window system wrapper for OpenGL
-
-from core import Shader, Mesh, Viewer, Node, load
-from transform import quaternion, vec, quaternion_from_euler
+from core import Node, load
+from transform import vec, quaternion_from_euler
 from animation import KeyFrameControlNode
 
 class Bird(Node):
